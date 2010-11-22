@@ -51,7 +51,9 @@ __author__  = 'Nicolas Rougier'
 __email__   = 'Nicolas.Rougier@loria.fr'
 
 
-import os.path, sys, traceback
+import os.path
+import sys
+import traceback
 import pygtk
 pygtk.require('2.0')
 import gtk, pango
@@ -218,11 +220,13 @@ class Console (gtk.ScrolledWindow):
         # Setup scrolled window
         gtk.ScrolledWindow.__init__(self)
         self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.set_shadow_type (gtk.SHADOW_ETCHED_IN)
+        self.set_shadow_type (gtk.SHADOW_NONE)
         self.set_border_width(0)
 
         # Setup text view
         self.text = gtk.TextView ()
+        self.text.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse('black'))
+        self.text.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse('white'))
         self.text.set_property ('can-focus', True)
         self.text.modify_font (pango.FontDescription(userfont))
         self.text.set_editable (True)
@@ -234,11 +238,11 @@ class Console (gtk.ScrolledWindow):
         # Setup text buffer
         self.buffer = self.text.get_buffer ()
         self.buffer.create_tag ('prompt',
-                weight=pango.WEIGHT_BOLD)
+                foreground='blue', weight=pango.WEIGHT_BOLD)
         self.buffer.create_tag ('script',
-                foreground='darkgrey', style=pango.STYLE_OBLIQUE)
+                foreground='yellow')
         self.buffer.create_tag ('normal',
-                foreground='blue')
+                foreground='white')
         self.buffer.create_tag ('error',
                 foreground='red', style=pango.STYLE_OBLIQUE)
         self.buffer.create_tag ('extern',
@@ -490,8 +494,8 @@ class Console (gtk.ScrolledWindow):
         f = open(filename)
         try:
             self.write ("Executing '%s'\n\n" % filename, 'extern')
-#            for line in f:
-#                self.write ('\t'+line, 'script')
+            # for line in f:
+                # self.write ('\t'+line, 'script')
             self.write ('\n')
             self.execute ("execfile('%s')" % filename)
             self.prompt1()
@@ -607,7 +611,7 @@ class ConsoleWindow:
         """ Initialize s console window """
         
         self.win = gtk.Window()
-        self.win.set_default_size (640, 400)
+        self.win.set_default_size (720, 480)
         self.win.set_border_width (3)
         self.win.connect ("destroy", lambda w: gtk.main_quit())
         self.win.connect ("delete_event", lambda w, e: gtk.main_quit())
